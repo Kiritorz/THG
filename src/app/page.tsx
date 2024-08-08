@@ -1,113 +1,245 @@
-import Image from "next/image";
+"use client"
+import { PokerCard } from "@/components/ui/poker-card"
+import { useEffect, useState } from "react"
+import { MersenneTwister19937, Random } from "random-js"
+
+interface Card {
+  suit: 'hearts' | 'diamonds' | 'clubs' | 'spades',
+  rank: number,
+  isFlipped: boolean
+}
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+
+  // Texas Hold'em Poker Card - Game Panel
+  // +-- Give player 2 random cards when game starts
+  // +-- Give dealer 5 random cards when game starts with all cards hidden
+
+  const Cards: Card[] = [
+    { suit: 'hearts', rank: 1, isFlipped: true },
+    { suit: 'hearts', rank: 2, isFlipped: true },
+    { suit: 'hearts', rank: 3, isFlipped: true },
+    { suit: 'hearts', rank: 4, isFlipped: true },
+    { suit: 'hearts', rank: 5, isFlipped: true },
+    { suit: 'hearts', rank: 6, isFlipped: true },
+    { suit: 'hearts', rank: 7, isFlipped: true },
+    { suit: 'hearts', rank: 8, isFlipped: true },
+    { suit: 'hearts', rank: 9, isFlipped: true },
+    { suit: 'hearts', rank: 10, isFlipped: true },
+    { suit: 'hearts', rank: 11, isFlipped: true },
+    { suit: 'hearts', rank: 12, isFlipped: true },
+    { suit: 'hearts', rank: 13, isFlipped: true },
+    { suit: 'diamonds', rank: 1, isFlipped: true },
+    { suit: 'diamonds', rank: 2, isFlipped: true },
+    { suit: 'diamonds', rank: 3, isFlipped: true },
+    { suit: 'diamonds', rank: 4, isFlipped: true },
+    { suit: 'diamonds', rank: 5, isFlipped: true },
+    { suit: 'diamonds', rank: 6, isFlipped: true },
+    { suit: 'diamonds', rank: 7, isFlipped: true },
+    { suit: 'diamonds', rank: 8, isFlipped: true },
+    { suit: 'diamonds', rank: 9, isFlipped: true },
+    { suit: 'diamonds', rank: 10, isFlipped: true },
+    { suit: 'diamonds', rank: 11, isFlipped: true },
+    { suit: 'diamonds', rank: 12, isFlipped: true },
+    { suit: 'diamonds', rank: 13, isFlipped: true },
+    { suit: 'clubs', rank: 1, isFlipped: true },
+    { suit: 'clubs', rank: 2, isFlipped: true },
+    { suit: 'clubs', rank: 3, isFlipped: true },
+    { suit: 'clubs', rank: 4, isFlipped: true },
+    { suit: 'clubs', rank: 5, isFlipped: true },
+    { suit: 'clubs', rank: 6, isFlipped: true },
+    { suit: 'clubs', rank: 7, isFlipped: true },
+    { suit: 'clubs', rank: 8, isFlipped: true },
+    { suit: 'clubs', rank: 9, isFlipped: true },
+    { suit: 'clubs', rank: 10, isFlipped: true },
+    { suit: 'clubs', rank: 11, isFlipped: true },
+    { suit: 'clubs', rank: 12, isFlipped: true },
+    { suit: 'clubs', rank: 13, isFlipped: true },
+    { suit: 'spades', rank: 1, isFlipped: true },
+    { suit: 'spades', rank: 2, isFlipped: true },
+    { suit: 'spades', rank: 3, isFlipped: true },
+    { suit: 'spades', rank: 4, isFlipped: true },
+    { suit: 'spades', rank: 5, isFlipped: true },
+    { suit: 'spades', rank: 6, isFlipped: true },
+    { suit: 'spades', rank: 7, isFlipped: true },
+    { suit: 'spades', rank: 8, isFlipped: true },
+    { suit: 'spades', rank: 9, isFlipped: true },
+    { suit: 'spades', rank: 10, isFlipped: true },
+    { suit: 'spades', rank: 11, isFlipped: true },
+    { suit: 'spades', rank: 12, isFlipped: true },
+    { suit: 'spades', rank: 13, isFlipped: true },
+  ]
+
+  const DoubleCards = [...Cards, ...Cards]
+
+  const [player1Cards, setPlayer1Cards] = useState<Card[]>([])
+  const [player2Cards, setPlayer2Cards] = useState<Card[]>([])
+  const [player3Cards, setPlayer3Cards] = useState<Card[]>([])
+  const [player4Cards, setPlayer4Cards] = useState<Card[]>([])
+
+  const [dealerCards, setDealerCards] = useState<Card[]>([])
+
+  // generate 13 numbers (0 - 103) due to the minute seed
+  const [seed, setSeed] = useState<number>(0)
+  useEffect(() => {
+    const now = new Date()
+    setSeed(now.getDate() * 24 * 360 + now.getHours() * 360 + now.getMinutes() * 6 + Math.floor(now.getSeconds() / 10))
+  }, [])
+
+  const generateUniqueRandomNumbers = (seed: number, count: number, min: number, max: number): number[] => {
+    const random = new Random(MersenneTwister19937.seed(seed))
+
+    const uniqueNumbers: Set<number> = new Set()
+
+    while (uniqueNumbers.size < count) {
+      const randomNumber = random.integer(min, max)
+      uniqueNumbers.add(randomNumber)
+    }
+
+    return Array.from(uniqueNumbers)
+  }
+
+  const FlipDealerCard = (index: number) => {
+    setDealerCards(dealerCards.map((card, i) => i === index ? { ...card, isFlipped: !card.isFlipped } : card))
+  }
+
+  const FlipPlayerCard = (index: number, playerIndex: number) => {
+    switch (playerIndex) {
+      case 1:
+        setPlayer1Cards(player1Cards.map((card, i) => i === index ? { ...card, isFlipped: !card.isFlipped } : card))
+        break
+      case 2:
+        setPlayer2Cards(player2Cards.map((card, i) => i === index ? { ...card, isFlipped: !card.isFlipped } : card))
+        break
+      case 3:
+        setPlayer3Cards(player3Cards.map((card, i) => i === index ? { ...card, isFlipped: !card.isFlipped } : card))
+        break
+      case 4:
+        setPlayer4Cards(player4Cards.map((card, i) => i === index ? { ...card, isFlipped: !card.isFlipped } : card))
+        break
+    }
+  }
+
+  useEffect(() => {
+    const randomNumbers = generateUniqueRandomNumbers(seed, 13, 0, 103)
+    setDealerCards([
+      DoubleCards[randomNumbers[8]],
+      DoubleCards[randomNumbers[9]],
+      DoubleCards[randomNumbers[10]],
+      DoubleCards[randomNumbers[11]],
+      DoubleCards[randomNumbers[12]]
+    ])
+    setPlayer1Cards([
+      DoubleCards[randomNumbers[0]],
+      DoubleCards[randomNumbers[1]]
+    ])
+    setPlayer2Cards([
+      DoubleCards[randomNumbers[2]],
+      DoubleCards[randomNumbers[3]]
+    ])
+    setPlayer3Cards([
+      DoubleCards[randomNumbers[4]],
+      DoubleCards[randomNumbers[5]]
+    ])
+    setPlayer4Cards([
+      DoubleCards[randomNumbers[6]],
+      DoubleCards[randomNumbers[7]]
+    ])
+  }, [])
+
+  const Header = (
+    <div className="flex justify-between px-2 py-1 rounded-lg bg-black text-white w-full mb-6">
+      <div>
+        {'Seed: ' + seed}
+      </div>
+      <div>
+        {'Texas Holdem Game'}
+      </div>
+    </div>
+  )
+
+  const Dealer = (
+    <div className="flex flex-col gap-2 mb-28">
+      <p className="font-bold">Dealer</p>
+      <div className="mx-auto flex flex-col gap-2 py-2 px-6 rounded-lg border-l-gray-600 border-r-gray-600 border-x-4 bg-gray-300">
+        <div className="flex gap-2 justify-center">
+          {dealerCards.slice(0, 3).map((card, i) => (
+            <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              onClick={() => FlipDealerCard(i)}
             />
-          </a>
+          ))}
+        </div>
+        <div className="flex gap-2 justify-center">
+          {dealerCards.slice(3, 5).map((card, i) => (
+            <PokerCard key={i + 3} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              onClick={() => FlipDealerCard(i + 3)}
+            />
+          ))}
         </div>
       </div>
+    </div>
+  )
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+  const Player = (
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-between gap-2">
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Player #1</p>
+          <div className="mx-auto flex gap-2">
+            {player1Cards.map((card, i) => (
+              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+                onClick={() => FlipPlayerCard(i, 1)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Player #2</p>
+          <div className="mx-auto flex gap-2">
+            {player2Cards.map((card, i) => (
+              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+                onClick={() => FlipPlayerCard(i, 2)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="flex justify-between gap-2">
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Player #3</p>
+          <div className="mx-auto flex gap-2">
+            {player3Cards.map((card, i) => (
+              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+                onClick={() => FlipPlayerCard(i, 3)}
+              />
+            ))}
+          </div >
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Player #4</p>
+          <div className="mx-auto flex gap-2">
+            {player4Cards.map((card, i) => (
+              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+                onClick={() => FlipPlayerCard(i, 4)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
-    </main>
-  );
+    </div>
+  )
+
+  return (
+    <div className="font-serif select-none flex flex-col gap-2 justify-center m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
+      {Header}
+      {
+        seed > 0 &&
+        Dealer
+      }
+      {
+        seed > 0 &&
+        Player
+      }
+    </div>
+  )
 }
