@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import localFont from 'next/font/local';
 import "./globals.css";
-
-const copyduck = localFont({ src: './Copyduck.ttf' })
 
 export const metadata: Metadata = {
   title: "THOG",
@@ -16,7 +13,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* <body className={copyduck.className}> */}
       <body className="bg-black">
         {children}
       </body>
