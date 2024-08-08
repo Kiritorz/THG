@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "THOG",
+  title: "THG",
   description: "Texas Hold'em Poker Card Game",
 };
 
