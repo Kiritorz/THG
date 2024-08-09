@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const pokerFont = localFont({
-  src: "./Poker.ttf",
+  src: "./PTSerif-Regular.ttf",
 })
 
 export default function RootLayout({
