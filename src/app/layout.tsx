@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import localFont from 'next/font/local';
 
 export const metadata: Metadata = {
   title: "THG",
   description: "Texas Hold'em Poker Card Game",
 };
+
+const pokerFont = localFont({
+  src: "./Poker.ttf",
+})
 
 export default function RootLayout({
   children,
@@ -13,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-black">
+      <body className={`bg-black ${pokerFont.className}`}>
         {children}
       </body>
     </html>
