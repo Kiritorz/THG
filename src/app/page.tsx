@@ -373,7 +373,7 @@ export default function Home() {
                 <span className="sr-only">Increase</span>
               </Button>
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="mb-8">
               <DrawerClose asChild>
                 <Button
                   disabled={winnerBet === 0}
