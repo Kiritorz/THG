@@ -3,7 +3,7 @@ import "./globals.css";
 import localFont from 'next/font/local';
 
 export const metadata: Metadata = {
-  title: "THG",
+  title: "THG Within 10 Secs",
   description: "Texas Hold'em Poker Card Game",
 };
 
