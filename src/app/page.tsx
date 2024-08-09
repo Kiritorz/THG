@@ -182,7 +182,10 @@ export default function Home() {
     } else {
       // initialize seed
       let initialSeed = getSeedByNow()
-      setSeed(initialSeed)
+      const randomLoadingTime = Math.floor(Math.random() * 1500) + 1
+      setTimeout(() => {
+        setSeed(initialSeed)
+      }, 500 + randomLoadingTime)
     }
   }, [seed])
 
@@ -294,6 +297,12 @@ export default function Home() {
   const onAddTotalFunds = (count: number) => {
     setTotalFunds(totalFunds + count)
   }
+
+  const Loading = (
+    <div className="w-full text-3xl text-center animate-bounce">
+      <PokerCard suit="hearts" rank={1} size="sm" isFlipped={false} />
+    </div>
+  )
 
   const Header = (
     <div className="flex justify-between">
@@ -536,6 +545,7 @@ export default function Home() {
   return (
     <div className="select-none min-h-[680px] flex flex-col gap-2 justify-between m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
       {Header}
+      {seed === 0 && Loading}
       {seed > 0 && Dealer}
       {seed > 0 && Money}
       {seed > 0 && Player}
