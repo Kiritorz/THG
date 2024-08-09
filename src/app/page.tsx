@@ -190,6 +190,42 @@ export default function Home() {
   const [isArrowPathIconRotated, setIsArrowPathIconRotated] = useState<boolean>(false)
   const [isSeedNew, setIsSeedNew] = useState<boolean>(false)
 
+  // next step
+  const handleNextStep = () => {
+    if (seed > 0) {
+      if (dealerCards[0].isFlipped === true || dealerCards[1].isFlipped === true || dealerCards[2].isFlipped === true) {
+        // flip 3 of 5 dealer cards
+        setDealerCards(dealerCards.map((card, i) => i < 3 ? { ...card, isFlipped: false } : card))
+      } else if (dealerCards[3].isFlipped === true) {
+        // flip the 4th of dealer cards
+        setDealerCards(dealerCards.map((card, i) => i === 3 ? { ...card, isFlipped: false } : card))
+      } else if (dealerCards[4].isFlipped === true) {
+        // flip the 5th of dealer cards
+        setDealerCards(dealerCards.map((card, i) => i === 4 ? { ...card, isFlipped: false } : card))
+      }
+    }
+  }
+
+  // regenerate the cards
+  const handleRegenerate = () => {
+    // flip all dealer cards and player cards
+    if (isSeedNew && !isArrowPathIconRotated) {
+      setDealerCards(dealerCards.map(card => ({ ...card, isFlipped: true })))
+      setPlayer1Cards(player1Cards.map(card => ({ ...card, isFlipped: true }))
+      )
+      setPlayer2Cards(player2Cards.map(card => ({ ...card, isFlipped: true }))
+      )
+      setPlayer3Cards(player3Cards.map(card => ({ ...card, isFlipped: true }))
+      )
+      setPlayer4Cards(player4Cards.map(card => ({ ...card, isFlipped: true }))
+      )
+      setIsArrowPathIconRotated(true)
+      setTimeout(() => {
+        setSeed(getSeedByNow())
+      }, 500)
+    }
+  }
+
   // when the 5 of 5 dealer cards are not flipped, the next step is not available
   useEffect(() => {
     if (dealerCards.length === 5
@@ -199,7 +235,9 @@ export default function Home() {
       && dealerCards[3].isFlipped === false
       && dealerCards[4].isFlipped === false
     ) {
-      setIsNextStepAvailable(dealerCards[4].isFlipped)
+      setIsNextStepAvailable(false)
+    } else {
+      setIsNextStepAvailable(true)
     }
   }, [dealerCards])
 
@@ -259,6 +297,7 @@ export default function Home() {
 
   const Header = (
     <div className="flex justify-between">
+      {/* Left Menu - Lose & Win */}
       <div className="font-serif flex gap-1.5 justify-start w-full">
         <Button size="icon"
           disabled={currentBet === 0}
@@ -267,6 +306,7 @@ export default function Home() {
             // Lose the current bet, substract the current bet from total funds and reset the current bet
             setTotalFunds(totalFunds)
             setCurrentBet(0)
+            handleRegenerate()
           }}
         >
           Lose
@@ -280,6 +320,7 @@ export default function Home() {
                 // Win the current bet open a drawer to ask the won bet
                 setTotalFunds(totalFunds + currentBet)
                 setCurrentBet(0)
+                handleRegenerate()
               }}
             >
               Win
@@ -339,43 +380,19 @@ export default function Home() {
           </DrawerContent>
         </Drawer>
       </div>
+      {/* Right Menu - Next & Regenerate */}
       <div className="font-serif flex gap-1.5 justify-end w-full">
         <Button size="icon"
           className="size-8"
           disabled={!isNextStepAvailable}
-          onClick={() => {
-            if (seed > 0) {
-              if (dealerCards[0].isFlipped === true || dealerCards[1].isFlipped === true || dealerCards[2].isFlipped === true) {
-                // flip 3 of 5 dealer cards
-                setDealerCards(dealerCards.map((card, i) => i < 3 ? { ...card, isFlipped: !card.isFlipped } : card))
-              } else if (dealerCards[3].isFlipped === true) {
-                // flip the 4th of dealer cards
-                setDealerCards(dealerCards.map((card, i) => i === 3 ? { ...card, isFlipped: !card.isFlipped } : card))
-              } else if (dealerCards[4].isFlipped === true) {
-                // flip the 5th of dealer cards
-                setDealerCards(dealerCards.map((card, i) => i === 4 ? { ...card, isFlipped: !card.isFlipped } : card))
-              }
-            }
-          }}
+          onClick={handleNextStep}
         >
           <ForwardIcon className={`size-4 my-auto`} />
         </Button>
         <Button size="icon"
           className="size-8"
           disabled={!isSeedNew || isArrowPathIconRotated}
-          onClick={() => {
-            setIsArrowPathIconRotated(true)
-
-            // flip all dealer cards and player cards
-            setDealerCards(dealerCards.map(card => ({ ...card, isFlipped: true })))
-            setPlayer1Cards(player1Cards.map(card => ({ ...card, isFlipped: true })))
-            setPlayer2Cards(player2Cards.map(card => ({ ...card, isFlipped: true })))
-            setPlayer3Cards(player3Cards.map(card => ({ ...card, isFlipped: true })))
-            setPlayer4Cards(player4Cards.map(card => ({ ...card, isFlipped: true })))
-            setTimeout(() => {
-              setSeed(getSeedByNow())
-            }, 500)
-          }}
+          onClick={handleRegenerate}
         >
           <ArrowPathIcon className={`size-4 my-auto ${isArrowPathIconRotated ? 'animate-spin' : ''}`} />
         </Button>
@@ -470,44 +487,54 @@ export default function Home() {
       {/* <div className="w-12 h-20 bg-destructive uppercase text-white flex flex-col justify-center items-center">
         Lose
       </div> */}
-      <div className="flex items-center justify-center gap-2 w-fit mx-auto mb-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 shrink-0 rounded-full"
-          onClick={() => onSubCurrentBet(10)}
-          disabled={currentBet < 10}
-        >
-          <Minus className="h-4 w-4" />
-          <span className="sr-only">Decrease</span>
-        </Button>
-        <div className="flex-1 text-center">
-          <div className="text-4xl font-bold tracking-tighter">
-            {currentBet}
+      {
+        totalFunds + currentBet === 0
+          ? <div className="flex items-center justify-center uppercase w-full h-24 text-center text-4xl">
+            - Wiped Out -
           </div>
-          <div className="text-[0.70rem] uppercase text-muted-foreground">
-            Current Bet
-          </div>
-          <div className="text-[0.70rem] uppercase text-muted-foreground">
-            Total Funds: {totalFunds + currentBet}
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 shrink-0 rounded-full"
-          onClick={() => onAddCurrentBet(10)}
-          disabled={totalFunds < 10}
-        >
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Increase</span>
-        </Button>
-      </div>
+          : totalFunds === 0
+            ? <div className="flex items-center justify-center uppercase w-full h-24 text-center text-5xl">
+              - All In -
+            </div>
+            : <div className="h-24 flex items-center justify-center gap-2 w-fit mx-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-full"
+                onClick={() => onSubCurrentBet(10)}
+                disabled={currentBet < 10}
+              >
+                <Minus className="h-4 w-4" />
+                <span className="sr-only">Decrease</span>
+              </Button>
+              <div className="flex-1 text-center">
+                <div className="text-4xl font-bold tracking-tighter">
+                  {currentBet}
+                </div>
+                <div className="text-[0.70rem] uppercase text-muted-foreground">
+                  Current Bet
+                </div>
+                <div className="text-[0.70rem] uppercase text-muted-foreground">
+                  Total Funds: {totalFunds + currentBet}
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-full"
+                onClick={() => onAddCurrentBet(10)}
+                disabled={totalFunds < 10}
+              >
+                <Plus className="h-4 w-4" />
+                <span className="sr-only">Increase</span>
+              </Button>
+            </div>
+      }
     </div>
   )
 
   return (
-    <div className="select-none flex flex-col gap-2 justify-center m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
+    <div className="select-none min-h-[680px] flex flex-col gap-2 justify-between m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
       {Header}
       {seed > 0 && Dealer}
       {seed > 0 && Money}
