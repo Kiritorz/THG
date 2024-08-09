@@ -328,7 +328,7 @@ export default function Home() {
                 <Button
                   disabled={winnerBet === 0}
                   onClick={() => {
-                    setTotalFunds(totalFunds + winnerBet)
+                    onAddTotalFunds(winnerBet)
                     setWinnerBet(0)
                   }}
                 >
