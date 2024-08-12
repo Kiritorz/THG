@@ -300,7 +300,7 @@ export default function Home() {
 
   const Loading = (
     <div className="w-full text-3xl text-center animate-bounce">
-      <PokerCard suit="hearts" rank={1} size="sm" isFlipped={false} />
+      <PokerCard suit="hearts" rank={1} isFlipped={false} />
     </div>
   )
 
@@ -415,14 +415,14 @@ export default function Home() {
       <div className="mx-auto flex flex-col gap-2 py-2 px-6 rounded-lg border-l-gray-600 border-r-gray-600 border-x-4 bg-gray-300">
         <div className="flex gap-2 justify-center">
           {dealerCards.slice(0, 3).map((card, i) => (
-            <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+            <PokerCard key={i} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
               onClick={() => FlipDealerCard(i)}
             />
           ))}
         </div>
         <div className="flex gap-2 justify-center">
           {dealerCards.slice(3, 5).map((card, i) => (
-            <PokerCard key={i + 3} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+            <PokerCard key={i + 3} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
               onClick={() => FlipDealerCard(i + 3)}
             />
           ))}
@@ -438,7 +438,7 @@ export default function Home() {
           <p className="font-serif font-bold">Player #1</p>
           <div className="mx-auto flex gap-2">
             {player1Cards.map((card, i) => (
-              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              <PokerCard key={i} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
                 onClick={() => FlipPlayerCard(i, 1)}
               />
             ))}
@@ -448,7 +448,7 @@ export default function Home() {
           <p className="font-serif font-bold">Player #2</p>
           <div className="mx-auto flex gap-2">
             {player2Cards.map((card, i) => (
-              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              <PokerCard key={i} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
                 onClick={() => FlipPlayerCard(i, 2)}
               />
             ))}
@@ -460,7 +460,7 @@ export default function Home() {
           <p className="font-serif font-bold">Player #3</p>
           <div className="mx-auto flex gap-2">
             {player3Cards.map((card, i) => (
-              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              <PokerCard key={i} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
                 onClick={() => FlipPlayerCard(i, 3)}
               />
             ))}
@@ -470,7 +470,7 @@ export default function Home() {
           <p className="font-serif font-bold">Player #4</p>
           <div className="mx-auto flex gap-2">
             {player4Cards.map((card, i) => (
-              <PokerCard key={i} suit={card.suit} rank={card.rank} size="sm" isFlipped={card.isFlipped}
+              <PokerCard key={i} suit={card.suit} rank={card.rank} isFlipped={card.isFlipped}
                 onClick={() => FlipPlayerCard(i, 4)}
               />
             ))}
@@ -492,7 +492,7 @@ export default function Home() {
   )
 
   const Money = (
-    <div className="flex justify-between">
+    <div className="flex justify-between md:absolute md:left-1/2 md:-translate-x-1/2 md:top-1/2">
       {/* <div className="w-12 h-20 bg-destructive uppercase text-white flex flex-col justify-center items-center">
         Lose
       </div> */}
@@ -543,7 +543,7 @@ export default function Home() {
   )
 
   return (
-    <div className="select-none min-h-[680px] flex flex-col gap-2 justify-between m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
+    <div className="relative select-none min-h-[680px] flex flex-col gap-2 justify-between m-2 p-2 bg-gray-100 border-2 border-gray-500 rounded-lg">
       {Header}
       {seed === 0 && Loading}
       {seed > 0 && Dealer}

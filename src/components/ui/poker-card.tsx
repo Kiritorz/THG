@@ -58,27 +58,20 @@ export interface PokerCardProps
     VariantProps<typeof pokerCardVariants> {
     suit: 'hearts' | 'diamonds' | 'clubs' | 'spades',
     rank: number,
-    size?: 'sm' | 'md' | 'lg',
     isFlipped: boolean
 }
 
 function PokerCard({ className, variant, suit, rank, isFlipped, ...props }: PokerCardProps) {
     return (
         <ReactCardFlip isFlipped={isFlipped}>
-            <div className={cn(pokerCardVariants({ variant }), className, 'h-20')} {...props}>
-                <div className={`flex flex-col items-center justify-center ${props.size === 'sm' ? 'w-8 h-16' :
-                    props.size === 'lg' ? 'w-20 h-28' :
-                        'w-16 h-24'
-                    }`}>
-                    <div className={`text-3xl`}>{Rank(rank)}</div>
-                    <div className={`text-xl font-sans ${SuitColor(suit)}`}>{Suit(suit)}</div>
+            <div className={cn(pokerCardVariants({ variant }), className, 'w-14 h-20 md:w-20 md:h-28')} {...props}>
+                <div className={`flex flex-col items-center justify-center w-full gap-0 md:gap-4`}>
+                    <div className={`text-3xl md:text-4xl`}>{Rank(rank)}</div>
+                    <div className={`text-xl md:text-2xl font-sans ${SuitColor(suit)}`}>{Suit(suit)}</div>
                 </div>
             </div>
-            <div className={cn(pokerCardVariants({ variant }), className, 'h-20 bg-gray-500')} {...props}>
-                <div className={`flex justify-center items-end pb-2 ${props.size === 'sm' ? 'w-8 h-16' :
-                    props.size === 'lg' ? 'w-20 h-28' :
-                        'w-16 h-24'
-                    }`}>
+            <div className={cn(pokerCardVariants({ variant }), className, 'w-14 h-20 md:w-20 md:h-28 bg-gray-500')} {...props}>
+                <div className={`flex justify-center items-end pb-2`}>
                 </div>
             </div>
         </ReactCardFlip>
